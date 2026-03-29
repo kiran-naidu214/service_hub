@@ -387,6 +387,8 @@ function renderProviders(role, service) {
   });
 }
 
+
+
 // ===== SEARCH — now attached to the services section search bar =====
 var searchInput = document.getElementById('searchInput');
 if (searchInput) {
@@ -426,3 +428,4 @@ if (searchInput) {
 renderCategories();
 
 }); // end DOMContentLoaded
+

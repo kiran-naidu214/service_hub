@@ -210,9 +210,10 @@ body {
   flex-direction: column;
   min-width: 160px;
   overflow: hidden;
+  display: none;
 }
 
-.profile-wrap:hover .dropdown-menu {
+.profile-wrap:focus-within .dropdown-menu{
   display: flex;
 }
 

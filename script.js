@@ -1,3 +1,6 @@
+// ===== WAIT FOR DOM — fixes GitHub Pages loading issues =====
+document.addEventListener('DOMContentLoaded', function () {
+
 // ===== MODAL FUNCTIONS =====
 function openModal(type) {
   document.getElementById(type + 'Modal').classList.add('active');
@@ -13,6 +16,11 @@ function switchModal(from, to) {
   closeModal(from);
   openModal(to);
 }
+
+// Expose modal functions globally so onclick="" in HTML still works
+window.openModal   = openModal;
+window.closeModal  = closeModal;
+window.switchModal = switchModal;
 
 // Close modal when clicking outside
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -310,6 +318,8 @@ function renderCategories() {
     container.appendChild(div);
   });
 }
+// expose globally for breadcrumb onclick=""
+window.renderCategories = renderCategories;
 
 function renderRoles(service) {
   currentService = service;
@@ -340,6 +350,7 @@ function renderRoles(service) {
     container.appendChild(div);
   });
 }
+window.renderRoles = renderRoles;
 
 function renderProviders(role, service) {
   cleanBackBtn();
@@ -376,37 +387,42 @@ function renderProviders(role, service) {
   });
 }
 
-// ===== SEARCH =====
-document.getElementById('searchInput').addEventListener('input', function() {
-  var q = this.value.toLowerCase().trim();
-  if (!q) {
-    renderCategories();
-    return;
-  }
-  cleanBackBtn();
-  breadcrumb.style.display = 'none';
-  container.className = 'service-grid';
-  container.innerHTML = '';
+// ===== SEARCH — now attached to the services section search bar =====
+var searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', function() {
+    var q = this.value.toLowerCase().trim();
+    if (!q) {
+      renderCategories();
+      return;
+    }
+    cleanBackBtn();
+    breadcrumb.style.display = 'none';
+    container.className = 'service-grid';
+    container.innerHTML = '';
 
-  services.forEach(function(s) {
-    s.roles.forEach(function(role) {
-      if (role.role.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)) {
-        var div = document.createElement('div');
-        div.className = 's-card';
-        div.innerHTML =
-          '<div class="s-card-icon"><i class="' + role.icon + '"></i></div>' +
-          '<h3>' + role.role + '</h3>' +
-          '<p>' + s.category + '</p>';
-        div.addEventListener('click', function() { renderProviders(role, s); });
-        container.appendChild(div);
-      }
+    services.forEach(function(s) {
+      s.roles.forEach(function(role) {
+        if (role.role.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)) {
+          var div = document.createElement('div');
+          div.className = 's-card';
+          div.innerHTML =
+            '<div class="s-card-icon"><i class="' + role.icon + '"></i></div>' +
+            '<h3>' + role.role + '</h3>' +
+            '<p>' + s.category + '</p>';
+          div.addEventListener('click', function() { renderProviders(role, s); });
+          container.appendChild(div);
+        }
+      });
     });
-  });
 
-  if (!container.children.length) {
-    container.innerHTML = '<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:40px 0;">No services found for "' + q + '"</p>';
-  }
-});
+    if (!container.children.length) {
+      container.innerHTML = '<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:40px 0;">No services found for "' + q + '"</p>';
+    }
+  });
+}
 
 // ===== INIT =====
 renderCategories();
+
+}); // end DOMContentLoaded
